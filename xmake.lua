@@ -14,7 +14,8 @@ target("kernel")
     add_includedirs("include")
     add_files("src/*.c")
 
-    add_cflags("-m64", "-mno-mmx", "-mno-sse", "-mno-red-zone", {force = true})
+    add_cflags("-m64", "-mno-red-zone", {force = true})
+    add_cflags("-mno-80387", "-mno-mmx", "-mno-sse", "-mno-sse2", {force = true})
     add_ldflags("-nostdlib", "-T", "assets/linker.ld", {force = true})
 
 target("iso")
