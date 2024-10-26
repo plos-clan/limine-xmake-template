@@ -12,7 +12,7 @@ target("kernel")
     set_toolchains("gcc")
 
     add_includedirs("include")
-    add_files("src/*.c")
+    add_files("src/**.c")
 
     add_cflags("-m64", "-mno-red-zone", {force = true})
     add_cflags("-mno-80387", "-mno-mmx", "-mno-sse", "-mno-sse2", {force = true})
@@ -27,7 +27,7 @@ target("iso")
         import("core.project.project")
 
         local iso_dir = "$(buildir)/iso"
-        os.cp("assets/limine", iso_dir .. "/limine")
+        os.cp("assets/limine/*", iso_dir .. "/limine/")
 
         local target = project.target("kernel")
         os.cp(target:targetfile(), iso_dir .. "/kernel.elf")
