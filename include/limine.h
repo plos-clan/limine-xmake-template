@@ -57,6 +57,9 @@ extern "C" {
 
 #define LIMINE_BASE_REVISION_SUPPORTED (limine_base_revision[2] == 0)
 
+#define LIMINE_LOADED_BASE_REV_VALID (limine_base_revision[1] != 0x6a7b384944536bdc)
+#define LIMINE_LOADED_BASE_REVISION (limine_base_revision[1])
+
 #define LIMINE_COMMON_MAGIC 0xc7b1dd30df4c8b88, 0x0a82e883a194f07b
 
 struct limine_uuid {

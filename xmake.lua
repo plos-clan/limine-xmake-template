@@ -3,7 +3,7 @@ set_project("limineOS")
 add_rules("mode.debug", "mode.release")
 
 set_optimize("fastest")
-set_warnings("all", "error")
+set_warnings("all", "extra")
 set_policy("build.optimization.lto", true)
 
 target("kernel")
@@ -16,7 +16,7 @@ target("kernel")
 
     add_cflags("-m64", "-mno-red-zone", {force = true})
     add_cflags("-mno-80387", "-mno-mmx", "-mno-sse", "-mno-sse2", {force = true})
-    add_ldflags("-nostdlib", "-T", "assets/linker.ld", {force = true})
+    add_ldflags("-nostdlib", "-static", "-T", "assets/linker.ld", {force = true})
 
 target("iso")
     set_kind("phony")
