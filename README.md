@@ -14,4 +14,4 @@ No need to install cross-compilers, as your system's GCC is usually enough (x86_
 
 Running `xmake` will build the kernel and create a bootable ISO image.
 
-Running `xmake build qemu` will build above and run the ISO in QEMU.
+Running `xmake run` will build above automatically and run it in QEMU.

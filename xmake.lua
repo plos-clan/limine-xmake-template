@@ -1,15 +1,18 @@
-set_project("limineOS")
+set_project("ExampleOS")
 
 add_rules("mode.debug", "mode.release")
 
 set_optimize("fastest")
 set_warnings("all", "extra")
+
+set_policy("run.autobuild", true)
 set_policy("build.optimization.lto", true)
 
 target("kernel")
     set_kind("binary")
     set_languages("c23")
     set_toolchains("gcc")
+    set_default(false)
 
     add_includedirs("include")
     add_files("src/**.c")
@@ -32,17 +35,21 @@ target("iso")
         local target = project.target("kernel")
         os.cp(target:targetfile(), iso_dir .. "/kernel.elf")
 
-        local iso_file = "$(buildir)/template.iso"
+        local iso_file = "$(buildir)/ExampleOS.iso"
         os.run("xorriso -as mkisofs --efi-boot limine/limine-uefi-cd.bin %s -o %s", iso_dir, iso_file)
         print("ISO image created at: " .. iso_file)
     end)
 
-target("qemu")
-    set_kind("phony")
-    add_deps("iso")
-    set_default(false)
+    on_run(function (target)
+        import("core.project.config")
 
-    on_build(function (target)
-        local flags = "-M q35 -drive if=pflash,format=raw,file=assets/ovmf-code.fd"
-        os.run("qemu-system-x86_64 %s -cdrom $(buildir)/template.iso", flags)
+        local flags = {
+            "-M", "q35",
+            "-cpu", "qemu64,+x2apic",
+            "-smp", "4",
+            "-drive", "if=pflash,format=raw,file=assets/ovmf-code.fd",
+            "-cdrom", config.buildir() .. "/ExampleOS.iso"
+        }
+        
+        os.runv("qemu-system-x86_64", flags)
     end)
