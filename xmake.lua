@@ -11,7 +11,7 @@ set_policy("build.optimization.lto", true)
 target("kernel")
     set_kind("binary")
     set_languages("c23")
-    set_toolchains("gcc")
+    set_toolchains("clang")
     set_default(false)
 
     add_includedirs("include")
@@ -37,7 +37,7 @@ target("iso")
 
         local iso_file = "$(buildir)/ExampleOS.iso"
         os.run("xorriso -as mkisofs --efi-boot limine/limine-uefi-cd.bin %s -o %s", iso_dir, iso_file)
-        print("ISO image created at: " .. iso_file)
+        print("ISO image created at: %s", iso_file)
     end)
 
     on_run(function (target)
