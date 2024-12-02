@@ -1,12 +1,14 @@
 set_project("ExampleOS")
 
 add_rules("mode.debug", "mode.release")
+add_requires("zig")
 
+set_arch("x86_64")
 set_optimize("fastest")
 set_warnings("all", "extra", "pedantic", "error")
 
 set_policy("run.autobuild", true)
-set_policy("build.optimization.lto", true)
+set_policy("check.auto_ignore_flags", false)
 
 target("kernel")
     set_kind("binary")
@@ -17,12 +19,12 @@ target("kernel")
     add_includedirs("include")
     add_files("src/**.c")
 
-    add_ldflags("-target x86_64-freestanding", {force = true})
-    add_cflags("-target x86_64-freestanding", {force = true})
+    add_ldflags("-target x86_64-freestanding")
+    add_cflags("-target x86_64-freestanding")
 
-    add_ldflags("-T assets/linker.ld", "-e kmain", {force = true})
-    add_cflags("-m64", "-flto", "-mno-red-zone", {force = true})
-    add_cflags("-mno-80387", "-mno-mmx", "-mno-sse", "-mno-sse2", {force = true})
+    add_ldflags("-T assets/linker.ld")
+    add_cflags("-m64", "-flto", "-mno-red-zone")
+    add_cflags("-mno-80387", "-mno-mmx", "-mno-sse", "-mno-sse2")
 
 target("iso")
     set_kind("phony")
