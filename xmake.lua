@@ -41,7 +41,11 @@ target("iso")
         os.cp(target:targetfile(), iso_dir .. "/kernel.elf")
 
         local iso_file = "$(buildir)/ExampleOS.iso"
-        os.run("xorriso -as mkisofs --efi-boot limine/limine-uefi-cd.bin %s -o %s", iso_dir, iso_file)
+        os.run("xorriso -as mkisofs -efi-boot-part --efi-boot-image --protective-msdos-label " ..
+        "-no-emul-boot -boot-load-size 4 -boot-info-table -hfsplus "..
+        "-R -r -J -apm-block-size 2048 "..
+        "--efi-boot limine/limine-uefi-cd.bin "..
+        "%s -o %s", iso_dir, iso_file)
         print("ISO image created at: %s", iso_file)
     end)
 
