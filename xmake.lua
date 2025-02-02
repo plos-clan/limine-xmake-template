@@ -23,7 +23,7 @@ target("kernel")
     add_cflags("-target x86_64-freestanding")
 
     add_ldflags("-T assets/linker.ld")
-    add_cflags("-m64", "-flto", "-mno-red-zone")
+    add_cflags("-m64", "-flto", "-mno-red-zone", "-nostdinc")
     add_cflags("-mno-80387", "-mno-mmx", "-mno-sse", "-mno-sse2")
 
 target("iso")
