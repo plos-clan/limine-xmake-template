@@ -1,6 +1,5 @@
-#include <stddef.h>
-#include <stdbool.h>
-#include <stdint.h>
+#include "stdint.h"
+#include "stddef.h"
 #include <limine.h>
 
 __attribute__((used, section(".limine_requests")))
@@ -18,7 +17,7 @@ static volatile LIMINE_REQUESTS_START_MARKER
 __attribute__((used, section(".limine_requests_end")))
 static volatile LIMINE_REQUESTS_END_MARKER
 
-void _start() {
+void _start(void) {
     if (LIMINE_BASE_REVISION_SUPPORTED == false) {
         for (;;) __asm__ ("hlt");
     }
