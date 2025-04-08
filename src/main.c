@@ -1,5 +1,4 @@
-#include "stdint.h"
-#include "stddef.h"
+#include "define.h"
 #include <limine.h>
 
 __attribute__((used, section(".limine_requests")))
