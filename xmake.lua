@@ -36,6 +36,7 @@ target("iso")
 
         local iso_dir = "$(buildir)/iso"
         os.cp("assets/limine/*", iso_dir .. "/limine/")
+        os.cp("assets/EFI/BOOT/*", iso_dir .. "/EFI/BOOT/")
 
         local target = project.target("kernel")
         os.cp(target:targetfile(), iso_dir .. "/kernel.elf")
