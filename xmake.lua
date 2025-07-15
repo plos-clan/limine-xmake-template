@@ -34,19 +34,18 @@ target("iso")
     on_build(function (target)
         import("core.project.project")
 
-        local iso_dir = "$(buildir)/iso"
+        local iso_dir = "$(builddir)/iso"
         os.cp("assets/limine/*", iso_dir .. "/limine/")
-        os.cp("assets/EFI/BOOT/*", iso_dir .. "/EFI/BOOT/")
 
         local target = project.target("kernel")
         os.cp(target:targetfile(), iso_dir .. "/kernel.elf")
 
-        local iso_file = "$(buildir)/ExampleOS.iso"
-        os.run("xorriso -as mkisofs -efi-boot-part --efi-boot-image --protective-msdos-label " ..
-        "-no-emul-boot -boot-load-size 4 -boot-info-table -hfsplus "..
-        "-R -r -J -apm-block-size 2048 "..
-        "--efi-boot limine/limine-uefi-cd.bin "..
-        "%s -o %s", iso_dir, iso_file)
+        local iso_file = "$(builddir)/ExampleOS.iso"
+        os.run("xorriso -as mkisofs -efi-boot-part --efi-boot-image --protective-msdos-label "..
+            "-no-emul-boot -boot-load-size 4 -boot-info-table -hfsplus "..
+            "-R -r -J -apm-block-size 2048 "..
+            "--efi-boot limine/limine-uefi-cd.bin "..
+            "%s -o %s", iso_dir, iso_file)
         print("ISO image created at: %s", iso_file)
     end)
 
@@ -58,8 +57,8 @@ target("iso")
             "-cpu", "qemu64,+x2apic",
             "-smp", "4",
             "-drive", "if=pflash,format=raw,file=assets/ovmf-code.fd",
-            "-cdrom", config.buildir() .. "/ExampleOS.iso"
+            "-cdrom", config.builddir() .. "/ExampleOS.iso"
         }
-        
+
         os.runv("qemu-system-x86_64", flags)
     end)
