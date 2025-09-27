@@ -1,4 +1,4 @@
-set_project("craftOS")
+set_project("ExampleOS")
 
 add_rules("mode.debug", "mode.release")
 add_requires("zig")
@@ -42,7 +42,7 @@ target("iso")
         local target = project.target("kernel")
         os.cp(target:targetfile(), iso_dir .. "/kernel.elf")
 
-        local iso_file = builddir .. "/craftOS.iso"
+        local iso_file = builddir .. "/ExampleOS.iso"
         os.run("xorriso -as mkisofs -efi-boot-part --efi-boot-image --protective-msdos-label "..
             "-no-emul-boot -boot-load-size 4 -boot-info-table -hfsplus "..
             "-R -r -J -apm-block-size 2048 "..
@@ -59,7 +59,7 @@ target("iso")
             "-cpu", "qemu64,+x2apic",
             "-smp", "4",
             "-drive", "if=pflash,format=raw,file=assets/ovmf-code.fd",
-            "-cdrom", builddir .. "/craftOS.iso"
+            "-cdrom", builddir .. "/ExampleOS.iso"
         }
 
         os.runv("qemu-system-x86_64", flags)
