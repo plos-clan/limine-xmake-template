@@ -1,4 +1,4 @@
-set_project("ExampleOS")
+set_project("craftOS")
 
 add_rules("mode.debug", "mode.release")
 add_requires("zig")
@@ -9,6 +9,8 @@ set_warnings("all", "extra", "pedantic", "error")
 
 set_policy("run.autobuild", true)
 set_policy("check.auto_ignore_flags", false)
+
+local builddir = "build"
 
 target("kernel")
     set_kind("binary")
@@ -34,13 +36,13 @@ target("iso")
     on_build(function (target)
         import("core.project.project")
 
-        local iso_dir = "$(builddir)/iso"
+        local iso_dir = builddir .. "/iso"
         os.cp("assets/limine/*", iso_dir .. "/limine/")
 
         local target = project.target("kernel")
         os.cp(target:targetfile(), iso_dir .. "/kernel.elf")
 
-        local iso_file = "$(builddir)/ExampleOS.iso"
+        local iso_file = builddir .. "/craftOS.iso"
         os.run("xorriso -as mkisofs -efi-boot-part --efi-boot-image --protective-msdos-label "..
             "-no-emul-boot -boot-load-size 4 -boot-info-table -hfsplus "..
             "-R -r -J -apm-block-size 2048 "..
@@ -57,7 +59,7 @@ target("iso")
             "-cpu", "qemu64,+x2apic",
             "-smp", "4",
             "-drive", "if=pflash,format=raw,file=assets/ovmf-code.fd",
-            "-cdrom", config.builddir() .. "/ExampleOS.iso"
+            "-cdrom", builddir .. "/craftOS.iso"
         }
 
         os.runv("qemu-system-x86_64", flags)
