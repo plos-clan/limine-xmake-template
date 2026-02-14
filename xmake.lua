@@ -4,7 +4,6 @@ add_rules("mode.debug", "mode.release")
 add_requires("zig")
 
 set_arch("x86_64")
-set_optimize("fastest")
 set_warnings("all", "extra", "pedantic", "error")
 
 set_policy("run.autobuild", true)
@@ -16,15 +15,23 @@ target("kernel")
     set_toolchains("@zig")
     set_default(false)
 
+    if is_mode("debug") then
+        set_optimize("g") 
+    else 
+        set_optimize("fastest")
+        set_policy("build.optimization.lto", true)
+    end
+
     add_includedirs("include")
     add_files("src/**.c")
 
-    add_ldflags("-target x86_64-freestanding")
     add_cflags("-target x86_64-freestanding")
-
-    add_ldflags("-T assets/linker.ld")
-    add_cflags("-m64", "-flto", "-mno-red-zone", "-nostdinc")
+    add_cflags("-m64", "-mno-red-zone", "-nostdinc", "-fno-builtin")
+    add_cflags("-mcmodel=kernel", "-fno-stack-protector")
     add_cflags("-mno-80387", "-mno-mmx", "-mno-sse", "-mno-sse2")
+
+    add_ldflags("-target x86_64-freestanding")
+    add_ldflags("-nostdlib", "-T assets/linker.ld")
 
 target("iso")
     set_kind("phony")
@@ -32,20 +39,32 @@ target("iso")
     set_default(true)
 
     on_build(function (target)
+        import("core.project.config")
         import("core.project.project")
 
-        local iso_dir = "$(builddir)/iso"
-        os.cp("assets/limine/*", iso_dir .. "/limine/")
+        local build_root = config.builddir()
+        local iso_dir = path.join(build_root, "iso")
+        local iso_file = path.join(build_root, "ExampleOS.iso")
+
+        os.mkdir(path.join(iso_dir, "limine"))
+        os.cp("assets/limine/*", path.join(iso_dir, "limine/"))
 
         local target = project.target("kernel")
-        os.cp(target:targetfile(), iso_dir .. "/kernel.elf")
+        os.cp(target:targetfile(), path.join(iso_dir, "kernel.elf"))
 
-        local iso_file = "$(builddir)/ExampleOS.iso"
-        os.run("xorriso -as mkisofs -efi-boot-part --efi-boot-image --protective-msdos-label "..
-            "-no-emul-boot -boot-load-size 4 -boot-info-table -hfsplus "..
-            "-R -r -J -apm-block-size 2048 "..
-            "--efi-boot limine/limine-uefi-cd.bin "..
-            "%s -o %s", iso_dir, iso_file)
+        local xorriso_args = {
+            "-as", "mkisofs",
+            "-R", "-r", "-J",
+            "--efi-boot", "limine/limine-uefi-cd.bin",
+            "-no-emul-boot",
+            "-efi-boot-part",
+            "--efi-boot-image",
+            "--protective-msdos-label",
+            "-o", iso_file,
+            iso_dir
+        }
+
+        os.runv("xorriso", xorriso_args)
         print("ISO image created at: %s", iso_file)
     end)
 
